@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1 class="text-2xl text-white font-bold mt-20  mb-10">Positive/Negative Lyric !</h1>
+    <div>
+        <div class="flex">
+            <form action="{% url 'lyric_classifier_predict' %}" method="post" id="uploadForm" class="w-1/2 mr-4">
+                {% csrf_token %}
+                <textarea name="lyricsInput" id="lyricsInput" class="border p-2 w-full h-96" placeholder="Input with lyric (Vietnamese)..."></textarea>
+                <button class="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Phân tích</button>
+            </form>
+            <div class="w-1/2 ml-4">
+                {% if result %}
+                    <h1>Analysis Result</h1>
+                    <p><strong>Overall Sentiment:</strong> {{ result }}</p>
+                    <p><strong>Positive Sentiment Percentage:</strong> {{ percent_positive }}</p>
+                    <p><strong>Negative Sentiment Percentage:</strong> {{ percent_negative }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

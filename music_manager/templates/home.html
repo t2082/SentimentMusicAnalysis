@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1 class="text-5xl text-white font-bold mt-20  mb-10">Welcome to EmoMusic !</h1>
+    <h2 class="mb-3 text-gray-300" >Upload an audio file: </h2>
+    <form action="{% url 'upload_music' %}" method="post" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+        <label for="music_file" class="cursor-pointer inline-block bg-gray-700 border border-gray-700 text-gray-300 py-3 px-4 rounded-lg hover:bg-gray-900 w-full h-20 flex justify-center items-center">
+            Upload limit 200MB per file .MP3
+        </label>
+        <input type="file" name="music_file" id="music_file" accept="audio/mp3,audio/mpeg" class="hidden" required>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-5 rounded">
+            Upload music
+        </button>
+        <a href="{% url 'lyric_classifier_page' %}" class="text-blue-500 float-right mt-5">Classifier with lyric →</a>
+    </form>
+    <div id="loadingMessage" class="hidden mt-10 text-xl text-white font-bold">
+        <p>Loading...</p>
+    </div>
+</div>
+{% if predictions %}
+<h1 class="text-xl text-white font-bold mb-10 mt-10">Results for: {{ song_name }}</h1>
+<div class="flex mt-10 w-full flex-col sm:flex-row gap-4">
+    <div class="p-20 border-r border-gray-400">
+        <h1 class="text-xl text-white font-bold">Percentage:</h1>
+        <p class="text-l text-white mt-5 ml-5">  Happy: {{ predictions.happy }}%</p>
+        <p class="text-l text-white mt-5 ml-5">  Sad: {{ predictions.sad }}%</p>
+        <p class="text-l text-white mt-5 ml-5">  Calm: {{ predictions.calm }}%</p>
+        <p class="text-l text-white mt-5 ml-5">  Nervous: {{ predictions.nervous }}%</p>
+    </div>
+    <div class="pl-32">
+        <canvas id="myChartVertical" width="800" height="400"></canvas> <!-- Biểu đồ cột dọc -->
+    </div>
+</div>
+{% endif %}
+
+<script>
+    document.getElementById('music_file').addEventListener('change', function () {
+        var fileName = this.files[0].name;
+        var label = document.querySelector('label[for="music_file"]');
+        label.textContent = fileName ? `File uploaded: ${fileName}` : 'Upload limit 200MB per file .MP3';
+    });
+    
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        document.getElementById('loadingMessage').classList.remove('hidden');
+    });
+
+
+    var data = {
+        labels: ['Happy', 'Sad', 'Calm', 'Nervour'],
+        datasets: [{
+            label: 'Phần trăm (%)',
+            data: [{{ predictions.happy }}, {{ predictions.sad }}, {{ predictions.calm }}, {{predictions.nervous}}], // Cập nhật dữ liệu thực tế ở đây
+            backgroundColor: ['rgba(0, 255, 0, 0.8)', 'rgba(0, 0, 255, 0.8)', 'rgba(255, 0, 255, 0.8)', 'rgba(255, 0, 255, 0.8)'],
+            borderColor: ['rgba(41, 206, 41, 1)', 'rgba(54, 162, 235, 1)', 'rgba(0, 225, 255, 1)', 'rgba(0, 0, 255, 1)'],
+            borderWidth: 1
+        }]
+    };
+    
+    // Biểu đồ cột dọc
+    var ctxVertical = document.getElementById('myChartVertical').getContext('2d');
+    var myChartVertical = new Chart(ctxVertical, {
+        type: 'bar',
+        data: data,
+        options: {
+            indexAxis: 'x',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'white' // Thay đổi màu sắc nhãn trục X sang màu trắng cho biểu đồ cột nằm ngang
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: 'white' // Thay đổi màu sắc nhãn trục Y sang màu trắng cho biểu đồ cột nằm ngang
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white' // Thay đổi màu sắc nhãn chú thích sang màu trắng
+                    }
+                }
+            }
+        }
+    });
+    
+</script>
+{% endblock %}
