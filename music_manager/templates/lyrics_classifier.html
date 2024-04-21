@@ -2,23 +2,92 @@
 
 {% block content %}
 
-    <h1 class="text-2xl text-white font-bold mt-20  mb-10">Positive/Negative Lyric !</h1>
+    <h1 class="text-2xl text-white font-bold mt-20  mb-10">Positive/Negative Lyrics !</h1>
     <div>
         <div class="flex">
+            
             <form action="{% url 'lyric_classifier_predict' %}" method="post" id="uploadForm" class="w-1/2 mr-4">
+                <div class="text-white text-xl">
+                    Input your lyrics (<span id="currentWordCount">0</span>/500 words):
+                </div>
                 {% csrf_token %}
-                <textarea name="lyricsInput" id="lyricsInput" class="border p-2 w-full h-96" placeholder="Input with lyric (Vietnamese)..."></textarea>
-                <button class="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Phân tích</button>
+                <div class="p-10">
+                    <textarea name="lyricsInput" id="lyricsInput" class="border w-full h-96 bg-gray-700 text-white"
+                        placeholder="Input with lyric (Vietnamese)..." oninput="limitWordCount(this, 500)">{{ lyrics }}</textarea>
+                    <button class="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Analysis</button>
+                </div>
+                <br>
             </form>
-            <div class="w-1/2 ml-4">
+            <div class="w-1/2 ml-4 border-l">
+                <div class="pl-10 text-white text-xl">Analysis Result: </div>
+
                 {% if result %}
-                    <h1>Analysis Result</h1>
-                    <p><strong>Overall Sentiment:</strong> {{ result }}</p>
-                    <p><strong>Positive Sentiment Percentage:</strong> {{ percent_positive }}</p>
-                    <p><strong>Negative Sentiment Percentage:</strong> {{ percent_negative }}</p>
+                    <div class="pl-20 pt-10 text-white">
+                        <p><strong>Overall Sentiment:</strong> {{ result }}</p>
+                        <p><strong>Positive Sentiment Percentage:</strong> {{ percent_positive }}</p>
+                        <p><strong>Negative Sentiment Percentage:</strong> {{ percent_negative }}</p>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <div class="w-1/2 m-10">
+                            <div class="flex">
+                                <canvas id="sentimentChart" class="w-1/2"></canvas>
+                                <div class="w-1/2 m-10">
+                                    <div class="m-50">
+                                        <p class="text-white"><span style="color: rgba(54, 162, 235);">■</span> Tiêu cực</p>
+                                        <p class="text-white"><span style="color: rgba(255, 99, 132);">■</span> Tích cực</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 text-white text-xl text-center">Negative/Positive Chart</div>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
+    <script>
+        function limitWordCount(textArea, limit) {
+                const words = textArea.value.trim().split(/\s+/).filter(Boolean);
+                document.getElementById('currentWordCount').textContent = words.length;
+                if (words.length > limit) {
+                    textArea.value = words.slice(0, limit).join(" ");
+                    document.getElementById('wordCountMessage').textContent = 'Word limit reached (300 words).';
+                } else {
+                    document.getElementById('wordCountMessage').textContent = '';
+                }
+            }
 
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('sentimentChart').getContext('2d');
+            var sentimentChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                        labels: ['Positive Sentiment', 'Negative Sentiment'],
+                        label: 'Sentiment Analysis',
+                        data: [{{ percent_positive }}, {{ percent_negative }}],
+                        backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',   // Light red
+                        'rgba(54, 162, 235, 0.6)',  // Light blue
+                        ],
+                        borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        }
+                    }
+                }
+                });
+        });
+    </script>
 {% endblock %}

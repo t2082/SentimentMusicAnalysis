@@ -42,7 +42,8 @@ puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', 
  '·', '_', '{', '}', '©', '^', '®', '`',  '<', '→', '°', '€', '™', '›',  '♥', '←', '×', '§', '″', '′', 'Â', '█', '½', 'à', '…', 
  '“', '★', '”', '–', '●', 'â', '►', '−', '¢', '²', '¬', '░', '¶', '↑', '±', '¿', '▾', '═', '¦', '║', '―', '¥', '▓', '—', '‹', '─', 
  '▒', '：', '¼', '⊕', '▼', '▪', '†', '■', '’', '▀', '¨', '▄', '♫', '☆', 'é', '¯', '♦', '¤', '▲', 'è', '¸', '¾', 'Ã', '⋅', '‘', '∞', 
- '∙', '）', '↓', '、', '│', '（', '»', '，', '♪', '╩', '╚', '³', '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø', '¹', '≤', '‡', '√', ]
+ '∙', '）', '↓', '、', '│', '（', '»', '，', '♪', '╩', '╚', '³', '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø', '¹', '≤', '‡', '√', 
+ 'Đk', 'Lyrics']
 
 def clean_text(x):
     x = str(x)
@@ -51,26 +52,12 @@ def clean_text(x):
             x = x.replace(punct, f' {punct} ')
     return x
 
-s1 = u'ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ'
-s0 = u'AAAAEEEIIOOOOUUYaaaaeeeiioooouuyAaDdIiUuOoUuAaAaAaAaAaAaAaAaAaAaAaAaEeEeEeEeEeEeEeEeIiIiOoOoOoOoOoOoOoOoOoOoOoOoUuUuUuUuUuUuUuYyYyYyYy'
-
 def text_normalize(text):
     """Chuyển đổi văn bản sang chữ thường và loại bỏ dấu câu."""
     text = text.lower()
     text = re.sub(r'[^\w\s]', '', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-
-
-def remove_accents(input_str):
-  s = ''
-  for c in input_str:
-    if c in s1:
-       s += s0[s1.index(c)]
-    else:
-      s += c
-  return s
-
 
 def clean_numbers(x):
     if bool(re.search(r'\d', x)):
@@ -97,17 +84,18 @@ def preprocess_lyrics(lyrics):
     lyrics = filter_text(lyrics)
     return lyrics
 
-def predict_lyrics_(lyrics, model_path='music_manager\\biLSTM.h5'):
-    with open("music_manager\\biLSTM_structure.json", 'r') as json_file:
-        model_json = json_file.read()
-    model = model_from_json(model_json)
-    model.load_weights(model_path)
-    with open("music_manager\\tokenizer.pickle", 'rb') as handle:
+def predict_lyrics_(lyrics, model_path='music_manager\\biLSTM_w2v4.h5'):
+    model = load_model(model_path)
+    with open("music_manager\\tokenizer500.pickle", 'rb') as handle:
         tokenizer = pickle.load(handle)
     lyrics = preprocess_lyrics(lyrics)
     seq = tokenizer.texts_to_sequences([lyrics])
-    padded = pad_sequences(seq, maxlen=300)
+    padded = pad_sequences(seq, maxlen=500)
     prediction = model.predict(padded)
+    percent_positive = prediction[0][1] * 100
+    percent_negative = prediction[0][0] * 100
     predicted_class = np.argmax(prediction, axis=1)
     print('debug class: ', predicted_class)
-    return predicted_class
+    print('debug percent_positive: ', percent_positive)
+    print('debug percent_negative: ', percent_negative)
+    return predicted_class, percent_positive, percent_negative

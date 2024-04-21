@@ -2,38 +2,39 @@
 
 {% block content %}
 <div>
-    <h1 class="text-5xl text-white font-bold mt-20  mb-10">Welcome to EmoMusic !</h1>
-    <h2 class="mb-3 text-gray-300" >Upload an audio file: </h2>
+    <h1 class="text-5xl title font-bold mt-20  mb-10">Welcome to EmoMusic !</h1>
+    <h2 class="mb-3" >Upload an audio file: </h2>
     <form action="{% url 'upload_music' %}" method="post" enctype="multipart/form-data" id="uploadForm">
         {% csrf_token %}
         <label for="music_file" class="cursor-pointer inline-block bg-gray-700 border border-gray-700 text-gray-300 py-3 px-4 rounded-lg hover:bg-gray-900 w-full h-20 flex justify-center items-center">
             Upload limit 200MB per file .MP3
         </label>
         <input type="file" name="music_file" id="music_file" accept="audio/mp3,audio/mpeg" class="hidden" required>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-5 rounded">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 title font-bold py-2 px-4 mt-5 rounded">
             Upload music
         </button>
         <a href="{% url 'lyric_classifier_page' %}" class="text-blue-500 float-right mt-5">Classifier with lyric →</a>
     </form>
-    <div id="loadingMessage" class="hidden mt-10 text-xl text-white font-bold">
+    <div id="loadingMessage" class="hidden mt-10 text-xl title font-bold">
         <p>Loading...</p>
     </div>
 </div>
 {% if predictions %}
-<h1 class="text-xl text-white font-bold mb-10 mt-10">Results for: {{ song_name }}</h1>
+<h1 class="text-xl title font-bold mb-10 mt-10">Results for: {{ song_name }}</h1>
 <div class="flex mt-10 w-full flex-col sm:flex-row gap-4">
     <div class="p-20 border-r border-gray-400">
-        <h1 class="text-xl text-white font-bold">Percentage:</h1>
-        <p class="text-l text-white mt-5 ml-5">  Happy: {{ predictions.happy }}%</p>
-        <p class="text-l text-white mt-5 ml-5">  Sad: {{ predictions.sad }}%</p>
-        <p class="text-l text-white mt-5 ml-5">  Calm: {{ predictions.calm }}%</p>
-        <p class="text-l text-white mt-5 ml-5">  Nervous: {{ predictions.nervous }}%</p>
+        <h1 class="text-xl title font-bold">Percentage:</h1>
+        <p class="text-l title mt-5 ml-5">  Happy: {{ predictions.happy }}%</p>
+        <p class="text-l title mt-5 ml-5">  Sad: {{ predictions.sad }}%</p>
+        <p class="text-l title mt-5 ml-5">  Calm: {{ predictions.calm }}%</p>
+        <p class="text-l title mt-5 ml-5">  Nervous: {{ predictions.nervous }}%</p>
     </div>
     <div class="pl-32">
         <canvas id="myChartVertical" width="800" height="400"></canvas> <!-- Biểu đồ cột dọc -->
     </div>
 </div>
 {% endif %}
+
 
 <script>
     document.getElementById('music_file').addEventListener('change', function () {

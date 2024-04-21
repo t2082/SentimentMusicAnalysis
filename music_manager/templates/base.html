@@ -7,21 +7,65 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/howler@2.2.1/dist/howler.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@1.0.0"></script>
+    <style>
+        :root {
+            --text-gray-800: #2d3748;
+            --text-black: #000000;
+            --text-white: #ffffff;
+        }
+        
+        body.dark-mode {
+            background-color: var(--text-gray-800);
+            color: var(--text-white);
+        }
+
+        body.light-mode {
+            background-color: var(--text-color-dark);
+            color: var(--text-black);
+        }
+    </style>
 </head>
-<body  class="bg-gray-800">
-<nav class="text-white p-4">
+<body>
+<nav class=" p-4">
     <div class="container mx-auto flex justify-between">
-        <a href="{% url 'home' %}" class="font-bold text-xl">
+        <a href="{% url 'home' %}" class="font-bold text-xl bg-gray-700 rounded-lg pl-3 pr-3 pt-2 pb-2">
             <b class="text-red-500">E</b>
             <b class="text-blue-500">M</b>
             <b class="text-yellow-500">O</b>
-            <b class="text-white-500">MUSIC</b>
+            <b class="text-white">MUSIC</b>
         </a>
-        <a href="{% url 'music_category' %}" class="font-bold text-l">| Kho Nhạc |</a>
+        <div>
+            <a href="{% url 'music_category' %}" class="font-bold text-xl">| Kho Nhạc |</a>
+            <button class="text-xl" id="themeButton" onclick="toggleTheme()">🌙</button>
+        </div>
+        
     </div>
 </nav>
 <main class="container mx-auto py-4">
     {% block content %}{% endblock %}
+    
 </main>
+<script>
+    function toggleTheme() {
+        let body = document.body;
+        body.classList.toggle('light-mode');
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+        updateButtonLabel();
+    }
+
+    function updateButtonLabel() {
+        let themeButton = document.getElementById('themeButton');
+        themeButton.textContent = body.classList.contains('light-mode') ? '🌙' : '💡';
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        let storedTheme = localStorage.getItem('theme') || 'dark'; // Mặc định là dark mode
+        document.body.classList.add(storedTheme + '-mode');
+        updateButtonLabel();
+    });
+</script>
+
 </body>
 </html>
