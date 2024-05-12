@@ -24,10 +24,11 @@
 <div class="flex mt-10 w-full flex-col sm:flex-row gap-4">
     <div class="p-20 border-r border-gray-400">
         <h1 class="text-xl title font-bold">Percentage:</h1>
+        <p class="text-l title mt-5 ml-5">  Dynamic: {{ predictions.dynamic }}%</p>
         <p class="text-l title mt-5 ml-5">  Happy: {{ predictions.happy }}%</p>
         <p class="text-l title mt-5 ml-5">  Sad: {{ predictions.sad }}%</p>
-        <p class="text-l title mt-5 ml-5">  Calm: {{ predictions.calm }}%</p>
-        <p class="text-l title mt-5 ml-5">  Nervous: {{ predictions.nervous }}%</p>
+        <p class="text-l title mt-5 ml-5">  Relax: {{ predictions.relaxed }}%</p>
+        <p class="text-l title mt-5 ml-5">  Anxious: {{ predictions.anxious }}%</p>
     </div>
     <div class="pl-32">
         <canvas id="myChartVertical" width="800" height="400"></canvas> <!-- Biểu đồ cột dọc -->
@@ -49,17 +50,14 @@
 
 
     var data = {
-        labels: ['Happy', 'Sad', 'Calm', 'Nervour'],
+        labels: ['Dynamic', 'Happy', 'Sad', 'Relaxing', 'Anxious'],
         datasets: [{
             label: 'Phần trăm (%)',
-            data: [{{ predictions.happy }}, {{ predictions.sad }}, {{ predictions.calm }}, {{predictions.nervous}}], // Cập nhật dữ liệu thực tế ở đây
-            backgroundColor: ['rgba(0, 255, 0, 0.8)', 'rgba(0, 0, 255, 0.8)', 'rgba(255, 0, 255, 0.8)', 'rgba(255, 0, 255, 0.8)'],
-            borderColor: ['rgba(41, 206, 41, 1)', 'rgba(54, 162, 235, 1)', 'rgba(0, 225, 255, 1)', 'rgba(0, 0, 255, 1)'],
+            data: [{{ predictions.dynamic }}, {{ predictions.happy }}, {{ predictions.sad }}, {{ predictions.relaxed }}, {{predictions.anxious}}], // Cập nhật dữ liệu thực tế ở đây
+            backgroundColor: ['rgba(255, 54, 86, 0.9)', 'rgba(84, 255, 251, 0.9)', 'rgba(162, 83, 161, 0.9)', 'rgba(179, 228, 117, 0.9)', 'rgba(229, 136, 35, 0.9)'],
             borderWidth: 1
         }]
     };
-    
-    // Biểu đồ cột dọc
     var ctxVertical = document.getElementById('myChartVertical').getContext('2d');
     var myChartVertical = new Chart(ctxVertical, {
         type: 'bar',

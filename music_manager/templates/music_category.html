@@ -21,7 +21,7 @@
             </div>
         {% endfor %}
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
-            Chọn nhạc
+            Choose Emo
         </button>
     </form>
     <hr>
@@ -29,7 +29,7 @@
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for file in files %}
             <div class="bg-white rounded-lg shadow p-4">
-                <p class="font-semibold">{{ file }}</p>
+                <p class="font-semibold text-black">{{ file }}</p>
                 <audio controls class="w-full mt-2">
                     <source src="{% static ''|add:emotion|add:'/'|add:file %}" type="audio/mpeg">
                     Your browser does not support the audio element.

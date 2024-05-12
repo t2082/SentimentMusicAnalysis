@@ -44,6 +44,8 @@ def upload_music(request):
             if os.path.exists(f'local_database/{music_file.name}'):
                 if not os.path.exists(f'{emo_path}/{music_file.name}'):
                     shutil.move(f'local_database/{music_file.name}', emo_path)
+                else:
+                    os.remove(f'{emo_path}/{music_file.name}')
             context = {'song_name': music_file.name, 'predictions': predictions}
             return render(request, 'home.html', context)
     else:
@@ -54,40 +56,19 @@ def upload_music(request):
 def predict_lyrics(request):
     if request.method == 'POST':
         lyrics = request.POST.get('lyricsInput')
-        # ----------------------------------------------------------------Dự đoán từng câu
-        # sentences = re.split(r'[.?!;\n]\s*', lyrics.strip())
-        # count_positive = 0
-        # count_negative = 0
+        if str(lyrics) == '':
+            return render(request, 'lyrics_classifier.html', {
+            'lyrics': str(lyrics),
+            'result': 'Please input a lyrics !',
+            'percent_positive': f'{50.00}',
+            'percent_negative': f'{50.00}'
+        })
 
-        # for sentence in sentences:
-        #     if sentence:
-        #         result = predict_lyrics_(sentence)  # Gọi hàm dự đoán của bạn
-        #         if result == 1:
-        #             count_positive += 1
-        #         else:
-        #             count_negative += 1
-
-        # total_sentences = count_positive + count_negative  # Tổng số câu được phân tích
-        # if total_sentences > 0:  # Kiểm tra để tránh chia cho zero
-        #     percent_positive = (count_positive / total_sentences) * 100
-        #     percent_negative = (count_negative / total_sentences) * 100
-        # else:
-        #     percent_positive = 0
-        #     percent_negative = 0
-
-        # # Xuất kết quả tỷ lệ phần trăm và phân loại
-        # if count_positive > count_negative:
-        #     result = "Tích cực"
-        # elif count_negative > count_positive:
-        #     result = "Tiêu cực"
-        # else:
-        #     result = "Trung tính"
-        # ----------------------------------------------------------------Dự đoán 1 đoạn 300 từ
         result, percent_positive, percent_negative = predict_lyrics_(lyrics)  # Gọi hàm dự đoán của bạn
         if result == 1:
-            result = "Tích cực"
+            result = "Positive"
         else:
-            result = "Tiêu cực"
+            result = "Negative"
         # Trả về kết quả cùng tỷ lệ phần trăm trong template
         return render(request, 'lyrics_classifier.html', {
             'lyrics': str(lyrics),

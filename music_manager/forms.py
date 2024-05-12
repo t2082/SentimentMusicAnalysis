@@ -5,9 +5,10 @@ class MusicForm(forms.Form):
     
 class EmotionForm(forms.Form):
     EMOTION_CHOICES = [
+        ('dynamic', 'Dynamic'),
         ('happy', 'Happy'),
         ('sad', 'Sad'),
-        ('calm', 'Calm'),
-        ('nervous', 'Nervous')
+        ('relaxed', 'Relax'),
+        ('anxious', 'Anxious')
     ]
     emotion = forms.ChoiceField(choices=EMOTION_CHOICES)

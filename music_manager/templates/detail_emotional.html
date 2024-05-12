@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-5xl title font-bold mt-20  mb-10">Analysis Filename !</h1>
+
+{% if predictions %}
+<h1 class="text-xl title font-bold mb-10 mt-10">Results for: {{ song_name }}</h1>
+<div class="flex mt-10 w-full flex-col sm:flex-row gap-4">
+    <!-- <div class="p-20 border-r border-gray-400">
+        <h1 class="text-xl title font-bold">Percentage:</h1>
+        <p class="text-l title mt-5 ml-5"> Dynamic: {{ predictions.dynamic }}%</p>
+        <p class="text-l title mt-5 ml-5"> Happy: {{ predictions.happy }}%</p>
+        <p class="text-l title mt-5 ml-5"> Sad: {{ predictions.sad }}%</p>
+        <p class="text-l title mt-5 ml-5"> Relax: {{ predictions.relaxed }}%</p>
+        <p class="text-l title mt-5 ml-5"> Anxious: {{ predictions.anxious }}%</p>
+    </div> -->
+    <div class="pl-32">
+        <canvas id="myChartVertical" width="800" height="400"></canvas> <!-- Biểu đồ cột dọc -->
+    </div>
+</div>
+{% endif %}
+
+
+<script>
+    document.getElementById('music_file').addEventListener('change', function () {
+        var fileName = this.files[0].name;
+        var label = document.querySelector('label[for="music_file"]');
+        label.textContent = fileName ? `File uploaded: ${fileName}` : 'Upload limit 200MB per file .MP3';
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', function () {
+        document.getElementById('loadingMessage').classList.remove('hidden');
+    });
+
+
+    var data = {
+        labels: ['Dynamic', 'Happy', 'Sad', 'Relaxing', 'Anxious'],
+        datasets: [{
+            label: 'Phần trăm (%)',
+            data: [{{ predictions.dynamic }}, {{ predictions.happy }}, {{ predictions.sad }}, { { predictions.relaxed } }, { { predictions.anxious } }], // Cập nhật dữ liệu thực tế ở đây
+    backgroundColor: ['rgba(84, 255, 251, 0.9)', 'rgba(162, 83, 161, 0.9)', 'rgba(179, 228, 117, 0.9)', 'rgba(229, 136, 35, 0.9)', 'rgba(229, 136, 35, 0.9)'],
+        borderWidth: 1
+        }]
+    };
+    var ctxVertical = document.getElementById('myChartVertical').getContext('2d');
+    var myChartVertical = new Chart(ctxVertical, {
+        type: 'bar',
+        data: data,
+        options: {
+            indexAxis: 'x',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'white' // Thay đổi màu sắc nhãn trục X sang màu trắng cho biểu đồ cột nằm ngang
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: 'white' // Thay đổi màu sắc nhãn trục Y sang màu trắng cho biểu đồ cột nằm ngang
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white' // Thay đổi màu sắc nhãn chú thích sang màu trắng
+                    }
+                }
+            }
+        }
+    });
+
+</script>
+{% endblock %}

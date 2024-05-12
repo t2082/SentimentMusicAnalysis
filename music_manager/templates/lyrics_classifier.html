@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h1 class="text-2xl text-white font-bold mt-20  mb-10">Positive/Negative Lyrics !</h1>
+    <h1 class="text-2xl text-white font-bold mt-20  mb-10">Positive/Negative Vietnamese Lyrics !</h1>
     <div>
         <div class="flex">
             
@@ -12,7 +12,7 @@
                 </div>
                 {% csrf_token %}
                 <div class="p-10">
-                    <textarea name="lyricsInput" id="lyricsInput" class="border w-full h-96 bg-gray-700 text-white"
+                    <textarea name="lyricsInput" id="lyricsInput" class="border w-full h-96 bg-gray-700 text-white p-3"
                         placeholder="Input with lyric (Vietnamese)..." oninput="limitWordCount(this, 500)">{{ lyrics }}</textarea>
                     <button class="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Analysis</button>
                 </div>
@@ -33,8 +33,8 @@
                                 <canvas id="sentimentChart" class="w-1/2"></canvas>
                                 <div class="w-1/2 m-10">
                                     <div class="m-50">
-                                        <p class="text-white"><span style="color: rgba(54, 162, 235);">■</span> Tiêu cực</p>
-                                        <p class="text-white"><span style="color: rgba(255, 99, 132);">■</span> Tích cực</p>
+                                        <p class="text-white"><span style="color: rgba(54, 162, 235);">■</span> Negative</p>
+                                        <p class="text-white"><span style="color: rgba(255, 99, 132);">■</span> Positive</p>
                                     </div>
                                 </div>
                             </div>
@@ -68,12 +68,12 @@
                         label: 'Sentiment Analysis',
                         data: [{{ percent_positive }}, {{ percent_negative }}],
                         backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',   // Light red
-                        'rgba(54, 162, 235, 0.6)',  // Light blue
+                        'rgba(248, 121, 84, 0.9)',   // Light red
+                        'rgba(84, 121, 248, 0.9)'  // Light blue
                         ],
                         borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
+                        'rgba(248, 121, 84, 0.9)',   // Light red
+                        'rgba(84, 121, 248, 0.9)'
                         ],
                         borderWidth: 1
                     }]
