@@ -45,7 +45,7 @@ def upload_music(request):
                 if not os.path.exists(f'{emo_path}/{music_file.name}'):
                     shutil.move(f'local_database/{music_file.name}', emo_path)
                 else:
-                    os.remove(f'{emo_path}/{music_file.name}')
+                    os.remove(f'local_database/{music_file.name}')
             context = {'song_name': music_file.name, 'predictions': predictions}
             return render(request, 'home.html', context)
     else:

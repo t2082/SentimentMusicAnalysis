@@ -50,68 +50,50 @@ def get_features(path,duration=28, offset=0.6):
     audio=np.array(aud)
     return audio
 
-def preprocessing(path):
-    # audio_data, sample_rate = librosa.load(path, sr=None)
-    # mel_spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=sample_rate)
-    # mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
-    # resized_mel = tf.image.resize(mel_spectrogram_db[..., np.newaxis], size=(128, 128))
-    # resized_mel = np.repeat(resized_mel.numpy(), 3, axis=-1)
-    # return resized_mel
-    import numpy as np
-    X=[]
-    features=get_features(path)
-    for i in features:
-            X.append(i)
-    X = np.array(X)
-    X = X.reshape(1, X.shape[0], 1)
-    return X
+# def preprocessing(path):
+#     # audio_data, sample_rate = librosa.load(path, sr=None)
+#     # mel_spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=sample_rate)
+#     # mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
+#     # resized_mel = tf.image.resize(mel_spectrogram_db[..., np.newaxis], size=(128, 128))
+#     # resized_mel = np.repeat(resized_mel.numpy(), 3, axis=-1)
+#     # return resized_mel
+#     import numpy as np
+#     X=[]
+#     features=get_features(path)
+#     for i in features:
+#             X.append(i)
+#     X = np.array(X)
+#     X = X.reshape(1, X.shape[0], 1)
+#     return X
 
-import joblib
-def predict_audio(music, model='music_manager\emotional_music_classifier_model.h5', encoder_ = joblib.load('music_manager\encoder.pkl')):
-    model = load_model(model)
-    processed_data = preprocessing(music)
-    prediction = model.predict(processed_data)
-    pred_enc = encoder_.inverse_transform(prediction)
-    class_ = pred_enc.flatten()[0]
+# import joblib
+# def predict_audio(music):
+#     model = load_model(model)
+#     processed_data = preprocessing(music)
+#     prediction = model.predict(processed_data)
     
-    class_labels = ['dynamic', 'happy', 'sad', 'relaxed', 'anxious']
-    for i, pred_proba in enumerate(prediction):
-        pre_ = {genre: f"{proba * 100:.2f}" for genre, proba in zip(class_labels, pred_proba)}
-    
-    print(class_)
-    
-    if class_ == 1:
-        predicted_genre = 'dynamic'
-    elif class_ == 2:
-        predicted_genre ='happy'
-    elif class_ == 3:
-        predicted_genre = 'sad'
-    elif class_ == 4:
-        predicted_genre ='relaxed'
-    else:
-        predicted_genre = 'anxious'
+#     class_labels = ['dynamic', 'happy', 'sad', 'relaxed', 'anxious']
+#     for i, pred_proba in enumerate(prediction):
+#         pre_ = {genre: f"{proba * 100:.2f}" for genre, proba in zip(class_labels, pred_proba)}
         
-    print(pre_) 
-    print(predicted_genre)
-    
-    return predicted_genre, pre_
+#     return predicted_genre, pre_
 
 
-def split_audio(audio_path, duration=29):
-    y, sr = librosa.load(audio_path, sr=None)
-    total_duration = librosa.get_duration(y=y, sr=sr)
-    audio_segments = []
-    for i in range(0, int(total_duration), duration):
-        start = i * sr
-        end = (i + duration) * sr
-        segment = y[start:end]
-        if len(segment) < duration * sr:
-            continue
-        audio_segments.append(segment)
-    return audio_segments
+# def split_audio(audio_path, duration=29):
+#     y, sr = librosa.load(audio_path, sr=None)
+#     total_duration = librosa.get_duration(y=y, sr=sr)
+#     audio_segments = []
+#     for i in range(0, int(total_duration), duration):
+#         start = i * sr
+#         end = (i + duration) * sr
+#         segment = y[start:end]
+#         if len(segment) < duration * sr:
+#             continue
+#         audio_segments.append(segment)
+#     return audio_segments
 
-import numpy as np
-import librosa
+# import numpy as np
+# import librosa
 
 # def predict_audio(audio_data, model='music_manager\emotional_music_classifier_model.h5', encoder_=joblib.load('music_manager\encoder.pkl')):
 #     model = load_model(model)
@@ -152,6 +134,30 @@ import librosa
     
 #     return predicted_genre, pre_percentage
 
+
+def preprocessing(path):
+    # audio_data, sample_rate = librosa.load(path, sr=None)
+    # mel_spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=sample_rate)
+    # mel_spectrogram = resize(np.expand_dims(mel_spectrogram, axis=-1), size=(128, 128))
+    audio_data, sample_rate = librosa.load(path, sr=None)
+    mel_spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=sample_rate)
+    mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
+    resized_mel = tf.image.resize(mel_spectrogram_db[..., np.newaxis], size=(128, 128))
+    resized_mel = np.repeat(resized_mel.numpy(), 3, axis=-1)
+    return resized_mel
+
+def predict_audio(music, model='music_manager\model.keras'):
+    model = load_model(model)
+    processed_data = preprocessing(music)
+    processed_data = np.expand_dims(processed_data, axis=0)  # Ensure the input has the right shape
+    prediction = model.predict(processed_data)[0]  # Get predictions for the batch
+    genres = ['dynamic', 'happy', 'sad', 'relaxed', 'anxious']
+    predictions = {genre: f"{round(prob * 100, 2)}" for genre, prob in zip(genres, prediction)} 
+    predicted_genre = genres[np.argmax(prediction)]
+    print (predictions)
+    print (predicted_genre)
+    print("Đã in pre")
+    return predicted_genre, predictions
 
 # Xử lí lời nhạc
 
