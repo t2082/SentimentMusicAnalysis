@@ -9,7 +9,6 @@ from .forms import EmotionForm
 from .models import predict_lyrics_
 import random
 import shutil
-import re
 
 def home(request):
     return render(request, 'home.html')
